@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% set page_title = "Opportunity Trackers" %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Select Opportunity Tracker</h1>
+    </div>
+    {% if state == "admin" %}
+    <div class="welcome-actions">
+        <a href="{{ url_for('admin.add_opportunity_tracker') }}" class="btn btn-">+ Add Opportunity Tracker</a>
+    </div>
+    {% endif %}
+</div>
+<div class="obj-list">
+    {% if state == "admin" %}
+    {% set endpoints = "admin.opportunity_tracker_overview" %}
+    {% elif state == "employee" %}
+    {% set endpoints = "employee.opportunity_tracker_overview" %}
+    {% endif %}
+    {% for opportunity_tracker in opportunity_trackers %}
+    <a href="{{ url_for(endpoints, rm_id=opportunity_tracker.id) }}" class="obj-card">
+        <div>
+            <div class="obj-card-title">{{ opportunity_tracker.firm }}</div>
+            <div class="obj-card-meta">
+                <span>{{ opportunity_tracker.industry }}</span>
+            </div>
+        </div>
+        <div class="obj-card-right">
+            <span class="btn btn-sm btn-outline">View Road Map &rarr;</span>
+        </div>
+    </a>
+    {% else %}
+    <div class="empty-state">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <h3>No Opportunity Tracker Found</h3>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

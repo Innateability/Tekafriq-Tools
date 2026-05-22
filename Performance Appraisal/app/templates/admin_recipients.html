@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% set page_title = "Select Recipients" %}
+{% block auth_content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Select Recipients</h1>
+        <p class="page-sub">Choose who to assign objectives to</p>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">Members</span>
+        <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted);cursor:pointer">
+            <input type="checkbox" id="selectAll" style="width:auto"> Select all
+        </label>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('admin.add_objective',batch_id=batch_id) }}">
+            <div class="recipient-grid">
+                {% if not names_auth %}
+                <div>
+                    All members have been assigned objectives for this batch
+                </div>
+                {% else %}
+                {% for auth in names_auth %}
+                <label class="recipient-card">
+                    <input type="checkbox" name="recipients[]" value="{{ auth.id }}" class="rcb">
+                    <div class="recipient-inner">
+                        <div class="recipient-check"></div>
+                        <div>
+                            <div style="font-weight:600;font-size:0.9rem">{{ auth.name }}</div>
+                            <div class="text-small text-muted">{{ auth.email }}
+                                {% if auth.administrator %} &mdash; <span class="badge badge-blue">Admin</span>
+                                {% elif auth.team_leader %} &mdash; <span class="badge badge-ash">Team Leader</span>
+                                {% elif auth.employee %} &mdash; <span class="badge badge-green">Employee</span>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </label>
+                {% else %}
+                <p class="text-muted">No members found.</p>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px">
+                <a href="{{ url_for('admin.home') }}" class="btn btn-ghost">Cancel</a>
+                <button type="submit" class="btn btn-primary">Continue to Objectives</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+document.getElementById('selectAll').addEventListener('change', function() {
+    document.querySelectorAll('.rcb').forEach(cb => cb.checked = this.checked);
+});
+</script>
+{% endblock %}

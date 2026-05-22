@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% set page_title = "Select Recipients" %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Select Recipients</h1>
+    <p class="page-sub">Choose team members to assign objectives to</p>
+</div>
+<div class="card">
+    <div class="card-header"><span class="card-title">Your Team</span></div>
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('team_leader.add_objective',batch_id=batch_id) }}">
+            <div class="recipient-grid">
+            {% if names_auth %}                
+            {% for auth in names_auth %}
+                <label class="recipient-card">
+                    <input type="checkbox" name="recipients[]" value="{{ auth.id }}" class="rcb">
+                    <div class="recipient-inner">
+                        <div class="recipient-check"></div>
+                        <div>
+                            <div style="font-weight:600;font-size:0.9rem">{{ auth.name }}</div>
+                            <div class="text-small text-muted">{{ auth.email }}</div>
+                        </div>
+                    </div>
+                </label>
+            {% endfor %}
+            </div>
+            <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px">
+                <a href="{{ url_for('team_leader.home') }}" class="btn btn-ghost">Cancel</a>
+                <button type="submit" class="btn btn-primary">Continue to Objectives</button>
+            </div>
+            {% else %}
+            <div>
+                All members have been assigned objectives for this batch
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

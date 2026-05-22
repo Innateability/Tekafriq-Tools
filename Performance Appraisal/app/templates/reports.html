@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% set page_title = "Report" %}
+{% block content %}
+{% if active %}
+{% if now > batch.end %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ batch.title }}</h1><br>
+        <h1 class="page-title">{{ batch.year }}</h1>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header"><span class="card-title">Performance Summary</span></div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>#</th><th>Name</th><th>Score</th>
+            </thead>
+            <tbody>
+                {% for (assigned_to, obj_id, mode), score in reports.items() %}
+                {% if state == "admin" %}
+                {% set endpoint = 'admin.objectives_overview' %}
+                {% elif state == "team_leader" %}
+                {% set endpoint = 'team_leader.objectives_overview' %}
+                {% endif %}
+                
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><a href="{{ url_for(endpoint, objective_id=obj_id, mode=mode) }}" class="text-blue" style="text-decoration:none;font-weight:500">{{ assigned_to.name }}</a></td>
+                    <td>{{ score[0] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>Objectives connected to this batch are not ready for report generation</h3>
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>Batch Not Active</h3>
+</div>
+{% endif %}
+{% endblock %}

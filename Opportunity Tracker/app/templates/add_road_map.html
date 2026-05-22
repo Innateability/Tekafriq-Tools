@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% set page_title = "Add Opportunity Tracker" %}
+{% block content %}
+<form method="POST" onsubmit="return validateWeights()">
+    <div class="card mb-4">
+        <div class="card-header"><span class="card-title">Opportunity Tracker Details</span></div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Firm Name</label>
+                    <input type="text" name="firm" placeholder="e.g. Tekafriq" required>
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="number" name="year" placeholder="2025" min="2020" max="2099" required>
+                </div>
+                <div class="form-group">
+                    <label>Industry</label>
+                    <input type="text" name="industry" placeholder="e.g. Telecommunications" required>
+                </div>
+                <div class="form-group">
+                    <label>Modules</label>
+                    <select name="modules[]" id="modules" multiple size="1">
+                        {% for module in modules %}
+                        <option value={{module}}>{{module}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Reffered By</label>
+                    <input type="text" name="refferred_by">
+                </div>
+                <div class="form-group">
+                    <label for="assigned_tos">Participants</label>
+                    <select name="assigned_tos[]" id="assigned_tos" multiple size="1">
+                        {% for name_auth in names_auth %}
+                        <option value="{{ name_auth.id }}">
+                            {{ name_auth.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Deal Size</label>
+                    <input type="number" name="deal_size">
+                </div>
+                <div class="form-group">
+                    <label>Exp Closure Date</label>
+                    <input type="text" id="expClosureDate" name="exp_closure_date" required>
+                </div>
+                <div class="form-group">
+                    <label>Customer Party</label>
+                    <input type="text" name="customer_party">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="padding:14px 22px;border-top:1px solid var(--ash-mid);display:flex;justify-content:flex-end;gap:10px">
+            <a href="{{ url_for('admin.home') }}" class="btn btn-ghost">Cancel</a>
+            <button type="submit" class="btn btn-primary">Create Road Map</button>
+        </div>
+    </div>
+</form>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  const startPicker = flatpickr("#expClosureDate", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    minDate: "today",
+    onChange: function(selectedDates) {
+      endPicker.set("minDate", selectedDates[0]);
+    }
+  });
+</script>{% endblock %}

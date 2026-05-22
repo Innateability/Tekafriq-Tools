@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% set page_title = "Report" %}
+{% block content %}
+ <style>
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #999; /* outer edge */
+}
+
+th {
+    background-color: #e6e6e6;
+    font-weight: bold;
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #999;
+}
+
+td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #999;
+}
+
+tr {
+     border: 1.5px solid #999;
+}
+
+    /* Row hover */
+    tbody tr {
+        cursor: pointer;
+    }
+
+    tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    td.deal-size {
+        text-align: right;
+    }
+
+    /* Stage colors */
+    .stage-Lead {
+        background-color: orange;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .stage-RFP {
+        background-color: yellow;
+        font-weight: bold;
+    }
+
+    .stage-Presentation {
+        background-color: yellow;
+        font-weight: bold;
+    }
+
+    .stage-Demo {
+        background-color: yellow;
+        font-weight: bold;
+    }
+
+    .stage-Contract {
+        background-color: yellowgreen;
+        font-weight: bold;
+    }
+
+    .stage-Won {
+        background-color: green;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .stage-Lost {
+        background-color: red;
+        color: #fff;
+        font-weight: bold;
+    }
+</style>
+{% if opportunity_trackers %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Name of Prospect</th>
+                <th>Industry</th>
+                <th>Modules</th>
+                <th>Referred By</th>
+                <th>Deal Size</th>
+                <th>Opportunity Stage</th>
+                <th>Exp Closure Date</th>
+                <th>Customer Party</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for opportunity_tracker in opportunity_trackers %}
+            <tr onclick="window.location='{{ url_for('admin.opportunity_tracker_overview' if state=='admin' else 'employee.opportunity_tracker_overview', rm_id=opportunity_tracker.id) }}' "style="cursor: pointer;">
+                <td>{{ opportunity_tracker.firm }}</td>
+                <td>{{ opportunity_tracker.industry }}</td>
+                <td>{{ opportunity_tracker.modules | join(', ') }}</td>
+                <td>{{ opportunity_tracker.reffered_by if opportunity_tracker.reffered_by else "—" }}</td>
+                <td class="deal-size">{{ opportunity_tracker.deal_size if opportunity_tracker.deal_size else "—" }}</td>
+                <td>{{ opportunity_tracker.opportunity_stage }}</td>
+                <td>{{ opportunity_tracker.exp_closure_date if opportunity_tracker.exp_closure_date else "—" }}</td>
+                <td>{{ opportunity_tracker.customer_party if opportunity_tracker.customer_party else "—" }}</td>
+                <td class="stage-{{ opportunity_tracker.opportunity_stage }}" style="width: 80px;"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>No Road Maps Yet</h3>
+</div>
+
+{% endif %}
+{% endblock %}

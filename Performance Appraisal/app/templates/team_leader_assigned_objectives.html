@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% set page_title = "Objectives" %}
+{% block content %}
+{% if active %}
+{% if now > batch.start %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ title|upper }}</h1>
+        <p class="page-sub">{{ "All assigned" if mode == "See All" else "Assigned to this member" }}</p>
+    </div>
+    <a href="{{ url_for('team_leader.recipients',batch_id=batch.id) }}" class="btn btn-primary">+ Assign Objective</a>
+</div>
+<div class="obj-list">
+    {% if grouped_objectives %}
+    {% for title, objs in grouped_objectives.items() %}
+    {% set ns = namespace(reviewed=false) %}
+    {% for obj in objs %}{% if obj.review %}{% set ns.reviewed = true %}{% endif %}{% endfor %}
+    {% for obj in objs %}
+    <a href="{{ url_for('team_leader.objectives_overview', mode='t', objective_id=obj.id) }}" class="obj-card {{ 'reviewed' if ns.reviewed }}">
+        <div>
+            <div class="obj-card-title">{{ title }}</div>
+            <div class="obj-card-meta">
+                <span>Assigned to: <strong>{{ obj.assigned_to.name }}</strong></span>
+            </div>
+        </div>
+        <div class="obj-card-right">
+            <span class="badge {{ 'badge-green' if ns.reviewed else 'badge-ash' }}">{{ 'Reviewed' if ns.reviewed else 'Pending' }}</span>
+            <span class="btn btn-sm btn-outline">View &rarr;</span>
+        </div>
+    </a>
+    {% else %}
+    <div class="empty-state">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <h3>No objectives assigned yet</h3>
+    </div>
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
+</div>
+{% elif now > batch.end %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>Objectives connected to this batch have ended</h3>
+</div>
+
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>Objectives connected to this batch  have not commenced</h3>
+</div>
+{% endif %}
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>Batch Not Active</h3>
+</div>
+{% endif %}
+{% endblock %}

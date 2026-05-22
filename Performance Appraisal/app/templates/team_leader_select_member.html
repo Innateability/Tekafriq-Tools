@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% set page_title = "Select Member" %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Select Member</h1>
+    <div style="display:flex;gap:10px">
+        <a href="{{ url_for('team_leader.received_objectives') }}" class="btn btn-outline">Received Objectives</a>
+        <a href="{{ url_for('team_leader.objectives', auth_id=admin_id) }}" class="btn btn-outline">All Assigned</a>
+    </div>
+</div>
+<div class="obj-list">
+    {% for auth in names_auth %}
+    <a href="{{ url_for('team_leader.objectives', auth_id=auth.id) }}" class="obj-card">
+        <div>
+            <div class="obj-card-title">{{ auth.name }}</div>
+            <div class="obj-card-meta"><span>{{ auth.email }}</span></div>
+        </div>
+        <span class="btn btn-sm btn-outline">View Objectives &rarr;</span>
+    </a>
+    {% else %}
+    <div class="empty-state">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <h3>No team members found</h3>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

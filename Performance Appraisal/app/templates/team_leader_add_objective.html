@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% set page_title = "Add Objectives" %}
+{% block content %}
+{% if active %}
+{% if now > batch.start %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Add Objectives</h1>
+        <p class="page-sub">Assigning to:
+            {% for r in recipients %}<strong>{{ r.name }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}
+        </p>
+    </div>
+</div>
+<form method="POST" onsubmit="return validateWeights()">
+    {% for recipient in recipients %}
+        <input type="hidden" name="recipients[]" value="{{ recipient.id }}">
+    {% endfor %}
+    <div class="card mb-4">
+        <div class="card-header"><span class="card-title">Batch Details</span></div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Batch Title</label>
+                    <p>{{ batch.title|upper }}</p>
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <p>{{ batch.year }}</p>
+                </div>
+                <div class="form-group">
+                    <label>Commence Date</label>
+                    <p>{{ batch.start.strftime("%B %d, %Y %I:%M %p") }}</p>
+                </div>
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <p>{{ batch.end.strftime("%B %d, %Y %I:%M %p") }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Objectives</span>
+            <button type="button" class="btn btn-primary btn-sm" onclick="addObjective()">+ Add Objective</button>
+        </div>
+        <div class="card-body">
+            <div id="objectives-container"></div>
+            <p class="text-small mt-2" style="color:var(--text-muted)">Total weight: <strong id="weightTotal">0</strong>% (must equal 100%)</p>
+        </div>
+        <div style="padding:14px 22px;border-top:1px solid var(--ash-mid);display:flex;justify-content:flex-end;gap:10px">
+            <button type="button" class="btn btn-ghost" onclick="history.back()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Objectives</button>
+        </div>
+    </div>
+</form>
+{% elif now > batch.end %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>Objectives connected to this batch have ended</h3>
+</div>
+
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>Objectives connected to this batch  have not commenced</h3>
+</div>
+{% endif %}
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>Batch Not Active</h3>
+</div>
+{% endif %}
+<script>
+
+let count = 0;
+function addObjective() {
+    count++;
+    const div = document.createElement('div');
+    div.className = 'obj-builder';
+    div.id = 'obj-' + count;
+    div.innerHTML = `
+        <div class="obj-builder-header">
+            <span class="obj-builder-label">Objective ${count}</span>
+            <button type="button" class="btn btn-sm" style="background:var(--red-light);color:var(--red);border:1px solid #f5c6c2" onclick="removeObj('obj-${count}')">Remove</button>
+        </div>
+        <div class="obj-builder-grid">
+            <div class="form-group" style="margin:0"><label>Objective</label><input type="text" name="objectives[]" placeholder="Describe the objective" required></div>
+            <div class="form-group" style="margin:0"><label>Category</label><select name="categories[]" required><option value="">Select Category</option><option>Personal Development</option><option>Technical</option><option>Others</option></select></div>
+            <div class="form-group" style="margin:0"><label>Weight (%)</label><input type="number" name="weights[]" placeholder="20" min="1" max="100" required onchange="updateTotal()"></div>
+            <div class="form-group" style="margin:0"><label>Public</label><select name="public[]" required><option value="">Select</option><option>True</option><option>False</option>
+        </div>`;
+    document.getElementById('objectives-container').appendChild(div);
+}
+function removeObj(id) { document.getElementById(id)?.remove(); updateTotal(); }
+function updateTotal() {
+    let total = 0;
+    document.getElementsByName("weights[]").forEach(w => total += Number(w.value || 0));
+    document.getElementById('weightTotal').textContent = total;
+    document.getElementById('weightTotal').style.color = total === 100 ? 'var(--success)' : 'var(--red)';
+}
+function validateWeights() {
+    let total = 0;
+    document.getElementsByName("weights[]").forEach(w => total += Number(w.value || 0));
+    if (total !== 100) { alert("Total weight must equal 100%. Current: " + total + "%"); return false; }
+    return true;
+}
+addObjective();
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% set page_title = "Edit Opportunity Tracker" %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Edit Opportunity Tracker</h1>
+    </div>
+</div>
+<div style="max-width:660px">
+    <div class="card">
+        <div class="card-header"><span class="card-title">{{ opportunity_tracker.firm }}</span></div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin.edit_opportunity_tracker' if role=='admin' else 'employee.edit_opportunity_tracker', rm_id=opportunity_tracker.id) }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Firm</label>
+                        <p>{{ opportunity_tracker.firm|upper }}</p>
+                    </div>
+                </div>
+                {% if state == "admin" %}
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="number" value="{{ opportunity_tracker.year }}" name="year" placeholder="2025" min="2020" max="2099" required>
+                </div>
+                <div class="form-group">
+                    <label>Modules</label>
+                    <select name="modules[]" value="{{ opportunity_tracker.modules }}"id="modules" multiple size="1">
+                        {% for module in modules %}
+                        <option {% if module in opportunity_tracker.modules %}selected{% endif %}>{{module}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Reffered By</label>
+                    <input type="text" value="{{ opportunity_tracker.reffered_by }}" name="refferred_by">
+                </div>
+                <div class="form-group">
+                    <label>Participants</label>
+                    <select name="assigned_tos[]" id="assigned_tos" multiple size="1">
+                        {% for name_auth in names_auth %}
+                        <option {% if name_auth in opportunity_tracker.assigned_to %}selected{% endif %} value="{{ name_auth.id }}">{{name_auth.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Deal Size</label>
+                    <input type="number" value="{{ opportunity_tracker.deal_size }}" name="deal_size">
+                </div>
+                <div class="form-group">
+                    <label>Exp Closure Date</label>
+                    <input type="text" value="{{ opportunity_tracker.exp_closure_date }}" id="expClosureDate" name="exp_closure_date">
+                </div>
+                {% endif %}
+                <div class="form-group">
+                    <label>Industry</label>
+                    <input type="text" value="{{ opportunity_tracker.industry }}" name="industry" placeholder="e.g. Telecommunications" required>
+                </div>
+                <div class="form-group">
+                    <label>Customer Party</label>
+                    <input type="text" value="{{ opportunity_tracker.customer_party }}" name="customer_party">
+                </div>
+                <div class="form-group">
+                    <label>opportunity_stage</label>
+                    <select name="opportunity_stage" value="{{ opportunity_tracker.Participants }}" id="assigned_tos">
+                        {% for opportunity_stage in opportunity_stages %}
+                        <option {% if opportunity_tracker.opportunity_stage == opportunity_stage %}selected{% endif %}>{{opportunity_stage}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="padding:14px 22px;border-top:1px solid var(--ash-mid);display:flex;justify-content:flex-end;gap:10px">
+                    <a href="{{ url_for('admin.home'if role=='admin' else 'employee.home') }}" class="btn btn-ghost">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Edit Road Map</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+document.querySelector("form").addEventListener("submit", function(e) {
+    const w = parseFloat(document.getElementById("w").value);
+    const sr = parseFloat(document.getElementById("sr").value);
+    let msg = "";
+    if (w > 100) msg += "Weight cannot exceed 100%.\n";
+    if (sr > 100) msg += "Score range cannot exceed 100.\n";
+    if (msg) { e.preventDefault(); alert(msg); }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  const startPicker = flatpickr("#expClosureDate", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    minDate: "today",
+    onChange: function(selectedDates) {
+      endPicker.set("minDate", selectedDates[0]);
+    }
+  });
+</script>
+{% endblock %}

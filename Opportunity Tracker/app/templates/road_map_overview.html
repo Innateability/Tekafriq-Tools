@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% set page_title = "Road Map Overview" %}
+{% block content %}
+<div class="welcome-banner">
+    <div>
+        <h2>{{ opportunity_tracker.firm }}</h2>
+    </div>
+    <a href="{{ url_for('admin.edit_opportunity_tracker' if state=='admin' else 'employee.edit_opportunity_tracker', rm_id=opportunity_tracker.id) }}" class="btn btn-ghost">Edit opportunity_tracker</a>
+</div>
+<div class="card mb-4">
+        <div class="card-header"><span class="card-title">Opportunity Tracker Details</span></div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group"> 
+                    <p style="margin-bottom: 10px;">Industry:</p>
+                    <p>{{ opportunity_tracker.industry }}</p>
+                </div>
+                <div class="form-group">
+                    <p style="margin-bottom: 10px;">Modules:</p>
+                    {% for module in opportunity_tracker.modules %}
+                    <p>{{ module }},</p>
+                    {% endfor %}
+                </div>
+                {% if opportunity_tracker.refferred_by %}
+                <div class="form-group">
+                    <p style="margin-bottom: 10px;">Reffered by:</p>
+                    <p>{{ opportunity_tracker.refferred_by}}</p>
+                </div>
+                {% endif %}
+                {% if opportunity_tracker.deal_size %}
+                <div class="form-group">
+                    <p style="margin-bottom: 10px;">Deal Size:</p>
+                    <p>{{ opportunity_tracker.deal_size }}</p>
+                </div>
+                {% endif %}
+                <div class="form-group">
+                    <p style="margin-bottom: 10px;">Opportunity Stage:</p>
+                    <p>{{ opportunity_tracker.opportunity_stage }}</p>
+                </div>
+                {% if opportunity_tracker.exp_closure_date %}
+                <div class="form-group">
+                    <p style="margin-bottom: 10px;">Exp Closure Date:</p>
+                    <p>{{ opportunity_tracker.exp_closure_date }}</p>
+                </div>
+                {% endif %}
+                {% if opportunity_tracker.customer_party %}
+                <div class="form-group">
+                    <p style="margin-bottom: 10px;">Customer Party:</p>
+                    <p>{{ opportunity_tracker.customer_party }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+ 
+    .comments-wrapper {
+        font-family: 'DM Sans', sans-serif;
+        max-width: 720px;
+        margin: 2rem 0;  /* ← was 2rem auto */}
+ 
+    .comments-wrapper h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #555;
+        margin-bottom: 1.2rem;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 0.5rem;
+    }
+ 
+    /* Comment list */
+    .comment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        margin-bottom: 1.5rem;
+    }
+ 
+    .comment-item {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+    }
+ 
+    .comment-item:first-child {
+        border-top: 1px solid #eee;
+    }
+ 
+    .comment-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+    }
+ 
+    .comment-author {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #222;
+    }
+ 
+    .comment-time {
+        font-size: 0.78rem;
+        color: #aaa;
+    }
+ 
+    .comment-text {
+        font-size: 0.92rem;
+        color: #444;
+        margin: 0;
+        line-height: 1.5;
+    }
+ 
+    .no-comments {
+        font-size: 0.9rem;
+        color: #aaa;
+        font-style: italic;
+        padding: 12px 0;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 1.5rem;
+    }
+ 
+    /* Form */
+    .comment-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+ 
+    .comment-form textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.92rem;
+        resize: vertical;
+        min-height: 80px;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+        color: #333;
+    }
+ 
+    .comment-form textarea:focus {
+        outline: none;
+        border-color: #555;
+    }
+ 
+    .comment-form button {
+        align-self: flex-end;
+        padding: 8px 22px;
+        background-color: #222;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+ 
+    .comment-form button:hover {
+        background-color: #444;
+    }
+</style>
+<div class="comments-wrapper">
+    <h3>Comments</h3>
+ 
+    <!-- Existing comments -->
+    {% if comments %}
+    <div class="comment-list">
+        {% for c in comments %}
+        <div class="comment-item">
+            <div class="comment-meta">
+                <span class="comment-author">{{ c.author }}</span>
+                <span class="comment-time">{{ c.timestamp.strftime('%d %b %Y, %H:%M') }}</span>
+            </div>
+            <p class="comment-text">{{ c.comment }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-comments">No comments yet. Be the first to add one.</p>
+    {% endif %}
+ 
+    <!-- Post a comment (standard form POST, no JS needed) -->
+    <form class="comment-form" method="POST" action="">
+        <input type="hidden" name="opportunity_tracker_id" value="{{ rm_id }}">
+        <textarea
+            name="comment_text"
+            placeholder="Write a comment…"
+            required
+        ></textarea>
+        <button type="submit">Post Comment</button>
+    </form>
+</div>
+{% endblock %}

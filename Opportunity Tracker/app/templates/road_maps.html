@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% set page_title = "Road Maps" %}
+{% block content %}
+{% if state == "admin" %}
+<div class="page-header">
+    <a href="{{ url_for('admin.add_opportunity_tracker') }}" class="btn btn-primary" >+ Add Road Map</a>
+</div>
+{% endif %}
+{% if opportunity_trackers %}
+<div class="obj-list">
+    {% if state == "admin" %}
+    {% for opportunity_tracker in opportunity_trackers %}
+    <a href="{{ url_for('admin.opportunity_tracker_overview',rm_id=opportunity_tracker.id) }}" class="obj-card" style="border-right: solid {{ opportunity_stages[opportunity_tracker.opportunity_stage] }} 6px;border-right-color: {{ opportunity_stages[opportunity_tracker.opportunity_stage] }};">
+        <div>
+            <div class="obj-card-title">{{ opportunity_tracker.firm }}</div>
+            <div class="obj-card-meta">
+                <span>{{ opportunity_tracker.industry }}</span>
+            </div>
+        </div>
+        <div class="obj-card-right">
+            <span class="btn btn-sm btn-outline">View Road Map &rarr;</span>
+        </div>
+    </a>
+    {% endfor %}
+
+    {% elif state == "employee" %}
+    {% for opportunity_tracker in opportunity_trackers %}
+    <a href="{{ url_for('employee.opportunity_tracker_overview',rm_id=opportunity_tracker.id) }}" class="obj-card" style="border-right: solid {{ opportunity_stages[opportunity_tracker.opportunity_stage] }} 6px;border-right-color: {{ opportunity_stages[opportunity_tracker.opportunity_stage] }};">
+        <div>
+            <div class="obj-card-title">{{ opportunity_tracker.firm }}</div>
+            <div class="obj-card-meta">
+                <span>{{ opportunity_tracker.industry }}</span>
+            </div>
+        </div>
+        <div class="obj-card-right">
+            <span class="btn btn-sm btn-outline">View Road Map &rarr;</span>
+        </div>
+    </a>
+    {% endfor %}
+    {% endif %}
+</div>
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>No Road Maps Yet</h3>
+    <p>Assign objectives to this batch to get started.</p>
+</div>
+{% endif %}
+<script>
+function toggleDivs() {
+    document.getElementById("div1").classList.toggle("hidden");
+    document.getElementById("div2").classList.toggle("hidden");
+}
+</script>
+
+{% endblock %}
