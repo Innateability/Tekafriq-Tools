@@ -21,7 +21,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config.from_object("config.Config")
-    
+
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
@@ -32,7 +32,9 @@ def create_app():
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
     
     jwt = JWTManager(app)
-
+    
+    print("DATABASE_URL =", os.getenv("DATABASE_URL"))
+    print("CONFIG_URI =", app.config.get("SQLALCHEMY_DATABASE_URI"))
 
     db.init_app(app)
     migrate.init_app(app,db)
